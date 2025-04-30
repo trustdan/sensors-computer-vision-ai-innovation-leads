@@ -415,14 +415,13 @@
     
     <div class="container">
         <header>
-            <h1></h1>>
             <div class="theme-switch-wrapper">
                 <label class="theme-switch" for="checkbox">
                     <input type="checkbox" id="checkbox" />
                     <div class="slider"></div>
                 </label>
                 <span class="theme-icon">☀️</span>
-            </div
+            </div>
             <h1>Contact info for Defense Innovation Organizations relating to sensors, computer vision, and AI</h1>
         </header>
         
@@ -462,7 +461,7 @@
             <a href="https://www.natsec.io/app" target="_blank">NatSec.io Interactive App</a><br>
             <a href="https://www.natsec.io/data" target="_blank">NatSec.io Data</a><br>
             <a href="https://www.natsec.io/graph" target="_blank">NatSec.io Graph</a><br>
-            <a href="https://www.natsec.io/map" target="_blank">NatSe.io Map</a><br>
+            <a href="https://www.natsec.io/map" target="_blank">NatSec.io Map</a><br>
             <a href="https://docs.google.com/spreadsheets/d/1dj9LztlbBCB7BPCNpTHd8ko_Uz1pcLQDjTOfEYJH6Ik/edit?gid=1780929379#gid=1780929379" target="_blank">NatSec.io Google Sheets Resource</a>
         </div>
         
@@ -474,7 +473,8 @@
     <img id="bottom-right-image" src="images/walter-glasses-300x199.jpg" alt="Scientist with glasses">
 
     <script>
-        document.addEventListener("DOMContentLoaded", functi;
+        document.addEventListener("DOMContentLoaded", function() {
+            const csvFileUrl = "DoD-Innovation-Contacts.csv";
 
             // Theme toggle functionality
             const toggleSwitch = document.querySelector('#checkbox');
@@ -502,8 +502,7 @@
                 }
             }
 
-            toggleSwitch.addEventListener('change', switchTheme, false)on () {
-            const csvFileUrl = "DoD-Innovation-Contacts.csv";
+            toggleSwitch.addEventListener('change', switchTheme, false);
 
             Papa.parse(csvFileUrl, {
                 download: true,

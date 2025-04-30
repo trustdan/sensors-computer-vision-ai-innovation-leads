@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defense Innovation Organizations</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #3a506b;
+            --secondary-color: #5bc0be;
+            --accent-color: #0b132b;
+            --text-color: #1c2541;
+            --light-color: #f8f9fa;
+            --border-color: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            padding: 30px 20px;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 10px 0 0;
+        }
+
+        .author-block {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .author-block a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .author-block a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        #csv-table_wrapper {
+            max-width: 100%;
+            overflow-x: auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* DataTables search bar */
+        div.dataTables_filter {
+            float: left !important;
+            text-align: left !important;
+            margin-bottom: 20px;
+        }
+        
+        div.dataTables_filter input {
+            width: 300px !important;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            font-size: 1rem;
+        }
+        
+        div.dataTables_filter label {
+            font-weight: 500;
+            color: var(--primary-color);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        th {
+            position: relative;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            white-space: nowrap;
+            cursor: col-resize;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        td {
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            word-wrap: break-word;
+            vertical-align: top;
+            background-color: white;
+            transition: background-color 0.2s;
+        }
+
+        tr:nth-child(even) td {
+            background-color: rgba(248, 249, 250, 0.7);
+        }
+
+        tr:hover td {
+            background-color: rgba(91, 192, 190, 0.1);
+        }
+
+        .resize-handle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            cursor: col-resize;
+            background-color: rgba(255, 255, 255, 0.3);
+            opacity: 0;
+            transition: opacity 0.2s, background-color 0.2s;
+        }
+
+        th:hover .resize-handle {
+            opacity: 1;
+            background-color: var(--secondary-color);
+        }
+
+        td a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        td a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .resources-section {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 100px;
+        }
+
+        .resources-section h3 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 8px;
+            margin-top: 0;
+        }
+
+        .resources-section a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+            display: inline-block;
+            margin: 4px 0;
+        }
+
+        .resources-section a:hover {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+
+        .resources-section p {
+            margin: 10px 0;
+        }
+
+        .resources-section strong {
+            color: var(--accent-color);
+        }
+
+        /* GitHub Corner */
+        .github-corner {
+            position: absolute;
+            top: 0;
+            right: 0;
+            border: 0;
+            z-index: 1000;
+        }
+
+        .github-corner svg {
+            fill: var(--secondary-color);
+            color: #fff;
+            width: 80px;
+            height: 80px;
+            filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.2));
+            transition: all 0.3s;
+        }
+
+        .github-corner:hover svg {
+            fill: var(--accent-color);
+            transform: scale(1.1);
+        }
+
+        .github-corner:hover .octo-arm {
+            animation: octocat-wave 560ms ease-in-out;
+        }
+
+        @keyframes octocat-wave {
+            0%, 100% { transform: rotate(0); }
+            20%, 60% { transform: rotate(-25deg); }
+            40%, 80% { transform: rotate(10deg); }
+        }
+
+        #bottom-right-image {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 150px;
+            height: auto;
+            z-index: 1000;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s;
+        }
+        
+        #bottom-right-image:hover {
+            transform: scale(1.05);
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: rgba(0, 0, 0, 0.5);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+            
+            #bottom-right-image {
+                width: 100px;
+            }
+            
+            .github-corner svg {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="https://github.com/trustdan/Defense-Innovation-Table" class="github-corner" aria-label="View source on GitHub">
+        <svg viewBox="0 0 250 250">
+            <path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path>
+            <path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" class="octo-arm"></path>
+            <path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path>
+        </svg>
+    </a>
+    
+    <div class="container">
+        <header>
+            <h1>List of Defense Innovation Organizations</h1>
+            <h2>...and some tools for winning federal contracts</h2>
+        </header>
+        
+        <div class="author-block">
+            <p>
+                You can sort by clicking on the top of any of the columns, filter using the search bar, and resize columns by dragging the column edges.<br>
+                Modeled after MetaOSINT's table, but simplified greatly. Thanks, ChatGPT.<br>
+                -Dan Rust<br>
+                <a href="https://linkedin.com/in/rustd" target="_blank">Connect with me on LinkedIn</a>
+            </p>
+        </div>
+
+        <table id="csv-table" class="display nowrap" style="width:100%">
+            <thead>
+                <tr id="table-header"></tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+        </table>
+
+        <div class="resources-section">
+            <h3>Additional Resources</h3>
+            <p>Explore various resources in the innovation ecosystem:</p>
+            
+            <a href="https://www.ctoinnovation.mil/innovation-organizations" target="_blank">Innovation organizations</a><br>
+            <a href="https://aida.mitre.org/dod-innovation-ecosystem/" target="_blank">DoD innovation ecosystem</a><br>
+            
+            <p>"NatSec.io is an exploratory effort incubated by the Defense Entrepreneurs Forum in 2021 that seeks to increase understanding of the national security innovation ecosystem, improve data literacy, and support learning mindsets with opportunities to experiment."</p>
+            
+            <p>"Elements: We think four elements can help interested people on their own journeys discover and help create value in and around the national security innovation ecosystem."</p>
+            
+            <strong>Data:</strong> "What powers the project (and an easy way to contribute)."<br>
+            <strong>Graph:</strong> "How the project data is connected."<br>
+            <strong>Map:</strong> "Where to find the project in your neighborhood."<br>
+            <strong>Timeline:</strong> "How national security innovation shows evolution over time."<br>
+            
+            <p>Resources:</p>
+            <a href="https://www.natsec.io/app" target="_blank">NatSec.io Interactive App</a><br>
+            <a href="https://www.natsec.io/data" target="_blank">NatSec.io Data</a><br>
+            <a href="https://www.natsec.io/graph" target="_blank">NatSec.io Graph</a><br>
+            <a href="https://www.natsec.io/map" target="_blank">NatSec.io Map</a><br>
+            <a href="https://docs.google.com/spreadsheets/d/1dj9LztlbBCB7BPCNpTHd8ko_Uz1pcLQDjTOfEYJH6Ik/edit?gid=1780929379#gid=1780929379" target="_blank">NatSec.io Google Sheets Resource</a>
+        </div>
+        
+        <footer>
+            &copy; 2023 Defense Innovation Organizations - All rights reserved
+        </footer>
+    </div>
+
+    <img id="bottom-right-image" src="images/walter-glasses-300x199.jpg" alt="Scientist with glasses">
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const csvFileUrl = "DoD-Innovation-Contacts.csv";
+
+            Papa.parse(csvFileUrl, {
+                download: true,
+                header: true,
+                complete: function (results) {
+                    let data = results.data.filter(row => 
+                        Object.values(row).some(value => value.trim() !== "")
+                    );
+
+                    const columns = Object.keys(data[0]);
+                    
+                    // Initialize headers with resize handles
+                    const headerRow = document.getElementById("table-header");
+                    columns.forEach(col => {
+                        const th = document.createElement("th");
+                        th.textContent = col;
+                        const handle = document.createElement("div");
+                        handle.className = "resize-handle";
+                        th.appendChild(handle);
+                        headerRow.appendChild(th);
+                    });
+
+                    // Populate table body
+                    const tableBody = document.getElementById("table-body");
+                    data.forEach(row => {
+                        const tr = document.createElement("tr");
+                        columns.forEach(col => {
+                            const td = document.createElement("td");
+                            td.textContent = row[col];
+                            tr.appendChild(td);
+                        });
+                        tableBody.appendChild(tr);
+                    });
+
+                    // Initialize DataTable with improved settings
+                    const table = $('#csv-table').DataTable({
+                        scrollX: true,
+                        scrollY: "500px",
+                        scrollCollapse: true,
+                        paging: false,
+                        autoWidth: true,
+                        // Change the default sort to "Micro-Category" instead of "Name"
+                        order: [[columns.indexOf("Micro-Category"), "asc"]],
+                        fixedHeader: {
+                            header: true,
+                            headerOffset: 0,
+                            fixedOffset: 0
+                        },
+                        language: {
+                            search: "Search / filter:" // custom text for the search label
+                        },
+                        columnDefs: [{
+                            targets: '_all',
+                            render: function(data, type, row) {
+                                if (type === 'display') {
+                                    let content = '<div style="white-space: normal;">';
+                                    const words = data.split(/\s+/);
+                                    words.forEach((word, index) => {
+                                        if (word.toLowerCase().startsWith('http://') || 
+                                            word.toLowerCase().startsWith('https://')) {
+                                            content += `<a href="${word}" target="_blank" rel="noopener noreferrer">${word}</a>`;
+                                        } else {
+                                            content += word;
+                                        }
+                                        if (index < words.length - 1) {
+                                            content += ' ';
+                                        }
+                                    });
+                                    content += '</div>';
+                                    return content;
+                                }
+                                return data;
+                            }
+                        }]
+                    });
+
+                    // Adjust column widths after table initialization
+                    table.columns.adjust();
+
+                    // Column resize functionality
+                    const thElems = document.querySelectorAll('th');
+                    thElems.forEach(th => {
+                        const resizeHandle = th.querySelector('.resize-handle');
+                        let startX, startWidth;
+
+                        resizeHandle.addEventListener('mousedown', function(e) {
+                            startX = e.pageX;
+                            startWidth = th.offsetWidth;
+                            
+                            document.addEventListener('mousemove', resize);
+                            document.addEventListener('mouseup', stopResize);
+                            
+                            e.preventDefault();
+                        });
+
+                        function resize(e) {
+                            const width = startWidth + (e.pageX - startX);
+                            th.style.width = `${width}px`;
+                        }
+
+                        function stopResize() {
+                            document.removeEventListener('mousemove', resize);
+                            document.removeEventListener('mouseup', stopResize);
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
